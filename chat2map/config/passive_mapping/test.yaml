@@ -1,0 +1,49 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+BASE_TASK_CONFIG_PATH: "configs/tasks/passive_mapping/test.yaml"
+NUM_PROCESSES: 1
+SENSORS: ["RGB_SENSOR", "DEPTH_SENSOR"]
+
+TRAINER_NAME: "chat2map_passiveMappingTrainer"
+
+STITCH_TOP_DOWN_MAPS: True
+
+EVAL:
+  USE_CKPT_CONFIG: True
+  DATA_PARALLEL_TRAINING: True
+
+PassiveMapping:
+  batch_size: 24
+  num_workers: 4
+
+  EvalMetrics:
+    types: ["f1_score", "iou"]
+
+  modality_tag_type_encoding_size: 1024 
+
+  VisualEnc:
+    num_out_channels: 512
+
+  AudioEnc:
+    num_input_channels: 9 
+
+  MemoryNet:
+    type: "transformer"
+
+    Transformer:
+      input_size: 1024 
+      decoder_out_size: 1024 
+      hidden_size: 2048
+      num_encoder_layers: 6
+      num_decoder_layers: 6
+      nhead: 8
+      dropout: 0.1
+      activation: 'relu'
+
+  PositionalNet:
+    num_freqs_for_sinusoidal: 8 
+    patch_hwCh: [4, 4, 1024]

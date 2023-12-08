@@ -1,0 +1,79 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+ENVIRONMENT:
+  MAX_CONTEXT_LENGTH: 16 
+  MAX_QUERY_LENGTH: 32
+
+SIMULATOR:
+  SCENE_DATASET: "mp3d"
+  RENDERED_OBSERVATIONS: "data/scene_observations/"
+  # local ego maps per scene per receiver node per rotation angle, size = 31 x 31 mapped at a resolution of 0.1 m
+  RENDERED_LOCAL_EGO_OCC_MAPS_DIR: "data/gt_topdown_maps/occupancy/localEgoMaps_perScenePerRRotn/mp3d/mp_sz31_scl01" 
+  # target local ego maps per scene per receiver node per rotation angle, size = 64 x 64 mapped at a resolution of 0.1 m, crops taken from stitching 51 x 51  size local ego maps 
+  RENDERED_GT_GLOBAL_CANONICAL_OCC_MAP_EGO_CROP_N_ROTS_DIR: "data/gt_topdown_maps/occupancy/stitchedEgoMaps_egoCropRot_perScenePerRRotn/mp3d/mp_sz64_scl01_srcEgLclMp_sz51"
+  GRID_SIZE: 1.0
+  
+  AUDIO:
+    META_DIR: "data/metadata/mp3d" 
+    RIR_DIR: "data/ambisonic_rirs/mp3d" 
+    RIR_SAMPLING_RATE:  16000 
+    HOP_LENGTH: 133 
+    N_FFT: 511 
+    WIN_LENGTH: 400 
+    MAX_VALID_IMPULSE_LENGTH_AFTER_REMOVING_LEADING_ZEROS: 34065 
+    ANECHOIC_AUDIO_SLICE_LENGTH: 3.0
+    ANECHOIC_DIR: "data/sounds/libri100Classes/heard_16k_rmsNorm400"
+    VAL_UNHEARD_ANECHOIC_DIR: "data/sounds/libri100Classes/heard_16k_rmsNorm400"  
+    TEST_UNHEARD_ANECHOIC_DIR: "data/sounds/libri100Classes/heard_16k_rmsNorm400" # heard_16k_rmsNorm400 (heard test), testUnheard_16k_rmsNorm400 (unheard test)
+    ANECHOIC_AUDIO_TARGET_RMS: 400
+  
+  LOCAL_MAP:
+    SIZE: 31
+    SCALE: 0.1
+    AGENT_POSITION: [0, 1.25, 0] 
+    HEIGHT_THRESH: [0.2, 1.5] 
+    WIDTH_DEPTH_IMG: 128
+    HEIGHT_DEPTH_IMG: 128
+    HFOV_DEPTH_IMG: 90
+    MIN_DEPTH: 0.0
+    MAX_DEPTH: 67.16327 
+    NORMALIZE_DEPTH_IMG: False
+  
+  ALL_AGENTS:
+    NUM: 2 
+
+TASK:
+  TYPE: chat2map 
+
+  AMBI_WAV_SENSOR:
+    FEATURE_SHAPE: [16000, 9]
+
+  CONTEXT_RGB_SENSOR:
+    WIDTH: 128
+    HEIGHT: 128
+
+  CONTEXT_DEPTH_SENSOR:
+    WIDTH: 128
+    HEIGHT: 128
+    MIN_DEPTH: 0.0
+    MAX_DEPTH: 67.16327 
+    NORMALIZE_DEPTH: True
+
+  CONTEXT_EGO_LOCAL_MAP_SENSOR:
+    SIZE: 31
+    NUM_CHANNELS: 2
+
+  QUERY_GT_GLOB_CAN_MAP_EGO_CROP_SENSOR:
+    SIZE: 64  
+    NUM_CHANNELS: 2 
+    SCALE: 0.1
+
+  CONTEXT_STITCHED_EGO_LOCAL_MAP_SENSOR:
+    SIZE: 1284
+
+PASSIVE_SAMPLING_DATASET:
+  TEST_DATASET_DIR: "data/datasets/mp3d/v1/w_audio/testHeard_rand_20steps_2agents_100attemptsOtherAgents_3.0eucDistThresh_noTrajOverlap"

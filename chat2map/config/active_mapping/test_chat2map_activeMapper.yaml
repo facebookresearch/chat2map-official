@@ -1,0 +1,80 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+BASE_TASK_CONFIG_PATH: "configs/tasks/active_mapping/test.yaml"
+NUM_PROCESSES: 1
+SENSORS: ["RGB_SENSOR", "DEPTH_SENSOR"]
+
+ENV_NAME: "DummyHabitatEnv"
+TRAINER_NAME: "chat2map_activeMappingTrainer"
+
+EVAL:
+  SPLIT: "testHeard_rand_20steps_2agents_100attemptsOtherAgents_3.0eucDistThresh_noTrajOverlap_1000eps"
+  USE_CKPT_CONFIG: True
+  EPISODE_COUNT: 1000
+
+STITCH_TOP_DOWN_MAPS_ACTIVE_MAPPING: True
+
+PassiveMapping:
+  TrainLosses:
+    types: []
+    weights: [1.0]
+
+  EvalMetrics:
+    types: ["f1_score", "iou"]
+
+  modality_tag_type_encoding_size: 1024
+
+  VisualEnc:
+    num_out_channels: 512
+
+  AudioEnc:
+    num_input_channels: 9 
+
+  MemoryNet:
+    type: "transformer"
+
+    Transformer:
+      input_size: 1024 
+      decoder_out_size: 1024 
+      hidden_size: 2048
+      num_encoder_layers: 6
+      num_decoder_layers: 6
+      nhead: 8
+      dropout: 0.1
+      activation: 'relu'
+
+  PositionalNet:
+    num_freqs_for_sinusoidal: 8 
+    patch_hwCh: [4, 4, 1024]
+
+RL:
+  PPO:
+    deterministic_eval: True
+
+    agent_type: "chat2map_activeMapper"
+
+    reward_type: "f1_score" 
+
+    PoseEnc:
+      output_size: 32 
+
+    AudioEnc:
+      output_size: 512
+ 
+    VisualEnc:
+      ablate_visual: False
+
+    ActionEnc:
+      output_size: 512
+
+    FuseNet:
+      output_size: 512
+
+    hidden_size: 512 
+    rnn_num_layers: 1 
+
+    use_ddppo: True

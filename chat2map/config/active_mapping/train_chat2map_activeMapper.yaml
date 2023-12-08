@@ -1,0 +1,118 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+BASE_TASK_CONFIG_PATH: "configs/tasks/active_mapping/train.yaml"
+NUM_PROCESSES: 1
+SENSORS: ["RGB_SENSOR", "DEPTH_SENSOR"]
+
+ENV_NAME: "DummyHabitatEnv"
+TRAINER_NAME: "chat2map_activeMappingTrainer"
+
+
+NUM_UPDATES: 60000 
+LOG_INTERVAL: 50
+CHECKPOINT_INTERVAL: 100
+
+VAL_WHILE_TRAINING: True
+EVAL:
+  SPLIT: "valHeard_rand_20steps_2agents_100attemptsOtherAgents_3.0eucDistThresh_noTrajOverlap_100eps"
+  USE_CKPT_CONFIG: True
+  EPISODE_COUNT: 100
+
+RESUME_AFTER_PREEMPTION: True
+
+PassiveMapping:
+  num_epochs: 1 
+  num_mini_batch: 11
+
+  lr: 1.0e-4
+  eps: 1.0e-5
+
+  TrainLosses:
+    types: ["bce_loss"]
+    weights: [1.0]
+
+  EvalMetrics:
+    types: ["f1_score", "iou"]
+
+  modality_tag_type_encoding_size: 1024
+
+  VisualEnc:
+    num_out_channels: 512
+
+  AudioEnc:
+    num_input_channels: 9 
+
+  MemoryNet:
+    type: "transformer"
+
+    Transformer:
+      input_size: 1024 
+      decoder_out_size: 1024 
+      hidden_size: 2048
+      num_encoder_layers: 6
+      num_decoder_layers: 6
+      nhead: 8
+      dropout: 0.1
+      activation: 'relu'
+
+  PositionalNet:
+    num_freqs_for_sinusoidal: 8 
+    patch_hwCh: [4, 4, 1024]
+
+RL:
+  PPO:
+    deterministic_eval: True
+
+    num_steps: 7
+
+    agent_type: "chat2map_activeMapper"
+
+    freeze_reconstructor: True
+    pretrained_ckpt_path: "runs/random/data/ckpt.best_reward_lastStep.pth"
+
+    reward_type: "f1_score" 
+    repeatPose_penalty_weight: 0.03
+    reward_window_size: 100
+
+    PoseEnc:
+      output_size: 32 
+
+    AudioEnc:
+      output_size: 512
+ 
+    VisualEnc:
+      ablate_visual: False
+
+    ActionEnc:
+      output_size: 512
+
+    FuseNet:
+      output_size: 512
+
+    hidden_size: 512 
+    rnn_num_layers: 1 
+
+    lr: 1.0e-4
+    clip_param: 0.1
+    ppo_epoch: 4 
+    num_mini_batch: 1
+    eps: 1.0e-5
+    max_grad_norm: 0.5
+
+    value_loss_coef: 0.5
+    entropy_coef: 0.1
+
+    gamma: 0.99
+    tau: 0.95
+    use_linear_clip_decay: True
+    use_linear_lr_decay: True
+
+    use_ddppo: True
+    ddppo_distrib_backend: "NCCL"
+    short_rollout_threshold: 1.0
+    sync_frac: 0.6
+  
