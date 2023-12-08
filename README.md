@@ -106,4 +106,4 @@ If you use the code or the paper, please cite the following paper:
 ```
 
 # License
-This codebase is licensed under the [CC-By-NC license](LICENSE).
+This codebase is licensed under the [CC-By-NC license](LICENSE), and the checkpoints are licensed under the same license in accordance with the Matterport3D data terms. Matterport3D data are distributed with its own terms using [this license](https://kaldir.vc.in.tum.de/matterport/MP_TOS.pdf).
