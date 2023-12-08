@@ -3,7 +3,7 @@ This repository contains the PyTorch implementation of our paper and the associa
 
 [Chat2Map: Efficient Scene Mapping from Multi-Ego Conversations](https://vision.cs.utexas.edu/projects/chat2map/)<br />
 Sagnik Majumder, Hao Jiang, Pierre Moulon, Ethan Henderson, Paul Calamia, Kristen Grauman\*, Vamsi Krishna Ithapu\*<br />
-UT Austin, Reality Labs at Meta, FAIR at Meta<br />
+UT Austin, Reality Labs Research at Meta, FAIR at Meta<br />
 CVPR 2023<br /><br />
 \* denotes equal contribution
 
